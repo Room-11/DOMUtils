@@ -1,0 +1,11 @@
+{
+  "name": "room11/dom-utils",
+  "description": "Utility functions for the PHP DOM extension",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [{"name": "Chris Wright"}],
+  "autoload": {
+    "psr-4": {"Room11\\DOMUtils\\": "src/"},
+    "files": ["src/functions.php"]
+  }
+}
