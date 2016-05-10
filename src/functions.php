@@ -80,7 +80,7 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_process_html_docs(array $htmlStrings, callable $callback, int $options = 0, string $charSet = ''): \DOMDocument
+function domdocument_process_html_docs(array $htmlStrings, callable $callback, int $options = 0, string $charSet = '')
 {
     if ($charSet === '') {
         $charSet = default_charset();
