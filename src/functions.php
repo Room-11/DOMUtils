@@ -123,3 +123,79 @@ function domdocument_process_html_docs(array $htmlStrings, callable $callback, i
         }
     }
 }
+
+/**
+ * Execute an xpath query against the supplied XPath index, document or node, and return the first matching DOMElement
+ *
+ * @param \DOMXPath|\DOMDocument|\DOMNode $target
+ * @param string $query
+ * @param \DOMNode $contextNode
+ * @return \DOMElement
+ * @throws \InvalidArgumentException
+ * @throws ElementNotFoundException
+ */
+function xpath_get_element($target, string $query, \DOMNode $contextNode = null): \DOMElement
+{
+    if ($target instanceof \DOMXPath) {
+        $xpath = $target;
+    } else if ($target instanceof \DOMDocument) {
+        $xpath = new \DOMXPath($target);
+    } else if ($target instanceof \DOMNode) {
+        $contextNode = $target;
+        $xpath = new \DOMXPath($target->ownerDocument);
+    } else {
+        throw new \InvalidArgumentException('Invalid target supplied: must be a DOMXPath, DOMDocument or DOMElement');
+    }
+    
+    $results = $xpath->query($query, $contextNode);
+    if ($results->length < 1) {
+        throw new ElementNotFoundException('Element matching ' . $query . ' was not found');
+    }
+
+    foreach ($results as $result) {
+        if ($result instanceof \DOMElement) {
+            return $result;
+        }
+    }
+
+    throw new ElementNotFoundException('No DOMElement nodes matching ' . $query . ' were found');
+}
+
+/**
+ * Execute an xpath query against the supplied XPath index, document or node, and return all matching DOMElements
+ *
+ * @param \DOMXPath|\DOMDocument|\DOMNode $target
+ * @param string $query
+ * @param \DOMNode $contextNode
+ * @return \DOMElement[]
+ * @throws \InvalidArgumentException
+ * @throws ElementNotFoundException
+ */
+function xpath_get_elements($target, string $query, \DOMNode $contextNode = null): array
+{
+    if ($target instanceof \DOMXPath) {
+        $xpath = $target;
+    } else if ($target instanceof \DOMDocument) {
+        $xpath = new \DOMXPath($target);
+    } else if ($target instanceof \DOMNode) {
+        $contextNode = $target;
+        $xpath = new \DOMXPath($target->ownerDocument);
+    } else {
+        throw new \InvalidArgumentException('Invalid target supplied: must be a DOMXPath, DOMDocument or DOMElement');
+    }
+
+    $results = $xpath->query($query, $contextNode);
+    if ($results->length < 1) {
+        throw new ElementNotFoundException('Element matching ' . $query . ' was not found');
+    }
+
+    $return = [];
+
+    foreach ($results as $result) {
+        if ($result instanceof \DOMElement) {
+            $return[] = $result;
+        }
+    }
+
+    return $return;
+}
