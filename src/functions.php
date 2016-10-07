@@ -199,3 +199,8 @@ function xpath_get_elements($target, string $query, \DOMNode $contextNode = null
 
     return $return;
 }
+
+function xpath_html_class(string $className): string
+{
+    return "contains(concat(' ', normalize-space(@class), ' '), ' {$className} ')";
+}
