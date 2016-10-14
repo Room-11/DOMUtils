@@ -142,7 +142,7 @@ function xpath_get_element($target, string $query, \DOMNode $contextNode = null)
         $xpath = new \DOMXPath($target);
     } else if ($target instanceof \DOMNode) {
         if ($contextNode !== null) {
-            throw new \InvalidArgumentException('Target is an instance of DOMNode, thus $contextNode may be passed');
+            throw new \InvalidArgumentException('Target is an instance of DOMNode, thus $contextNode may not be passed');
         }
 
         $contextNode = $target;
