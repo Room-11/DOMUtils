@@ -67,6 +67,48 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
 }
 
 /**
+ * Loads a XML string into a DOMDocument object, with error handling and character set normalization.
+ *
+ * @param string $html
+ * @param int $options
+ * @param string $charSet
+ * @return \DOMDocument
+ * @throws LibXMLFatalErrorException
+ */
+function domdocument_load_xml(string $html, int $options = 0, string $charSet = ''): \DOMDocument
+{
+    if (!preg_match('#^\s*<\?xml#i', $html)) {
+        if ($charSet === '') {
+            $charSet = default_charset();
+        }
+
+        $html = '<?xml encoding="' . $charSet . '" ?>' . $html;
+    }
+
+    $internalErrors = null;
+
+    try {
+        $internalErrors = libxml_use_internal_errors(true);
+
+        $dom = new \DOMDocument();
+        $dom->loadXML($html, $options);
+
+        /** @var \LibXMLError $error */
+        foreach (libxml_get_errors() as $error) {
+            if ($error->level === LIBXML_ERR_FATAL) {
+                throw new LibXMLFatalErrorException($error);
+            }
+        }
+
+        return $dom;
+    } finally {
+        if ($internalErrors !== null) {
+            libxml_use_internal_errors($internalErrors);
+        }
+    }
+}
+
+/**
  * Processes a set of HTML strings into DOMDocument objects and invokes a callback for each one.
  *
  * A DOMDocument object will be passed to the first argument of the callback, and an array of LibXMLError objects
