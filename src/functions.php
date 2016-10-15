@@ -141,12 +141,16 @@ function xpath_get_element($target, string $query, \DOMNode $contextNode = null)
     } else if ($target instanceof \DOMDocument) {
         $xpath = new \DOMXPath($target);
     } else if ($target instanceof \DOMNode) {
+        if ($contextNode !== null) {
+            throw new \InvalidArgumentException('Target is an instance of DOMNode, thus $contextNode may not be passed');
+        }
+
         $contextNode = $target;
         $xpath = new \DOMXPath($target->ownerDocument);
     } else {
         throw new \InvalidArgumentException('Invalid target supplied: must be a DOMXPath, DOMDocument or DOMElement');
     }
-    
+
     $results = $xpath->query($query, $contextNode);
     if ($results->length < 1) {
         throw new ElementNotFoundException('Element matching ' . $query . ' was not found');
