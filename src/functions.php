@@ -75,14 +75,14 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_load_xml(string $html, int $options = 0, string $charSet = ''): \DOMDocument
+function domdocument_load_xml(string $xml, int $options = 0, string $charSet = ''): \DOMDocument
 {
-    if (!preg_match('#^\s*<\?xml#i', $html)) {
+    if (!preg_match('#^\s*<\?xml#i', $xml)) {
         if ($charSet === '') {
             $charSet = default_charset();
         }
 
-        $html = '<?xml encoding="' . $charSet . '" ?>' . $html;
+        $xml = '<?xml encoding="' . $charSet . '" ?>' . $xml;
     }
 
     $internalErrors = null;
@@ -91,7 +91,7 @@ function domdocument_load_xml(string $html, int $options = 0, string $charSet = 
         $internalErrors = libxml_use_internal_errors(true);
 
         $dom = new \DOMDocument();
-        $dom->loadXML($html, $options);
+        $dom->loadXML($xml, $options);
 
         /** @var \LibXMLError $error */
         foreach (libxml_get_errors() as $error) {
