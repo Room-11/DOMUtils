@@ -11,13 +11,13 @@ namespace Room11\DOMUtils;
  * @param string $charSet
  * @return string
  */
-function default_charset(string $charSet = ''): string
+function default_charset(string $charSet = null): string
 {
     static $defaultCharSet = 'UTF-8';
 
     $result = $defaultCharSet;
 
-    if ($charSet !== '') {
+    if ($charSet !== null) {
         $defaultCharSet = $charSet;
     }
 
@@ -33,10 +33,10 @@ function default_charset(string $charSet = ''): string
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_load_html(string $html, int $options = 0, string $charSet = ''): \DOMDocument
+function domdocument_load_html(string $html, int $options = 0, string $charSet = null): \DOMDocument
 {
     if (!preg_match('#^\s*<\?xml#i', $html)) {
-        if ($charSet === '') {
+        if ($charSet === null) {
             $charSet = default_charset();
         }
 
@@ -69,20 +69,20 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
 /**
  * Loads a XML string into a DOMDocument object, with error handling and character set normalization.
  *
- * @param string $html
+ * @param string $xml
  * @param int $options
  * @param string $charSet
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_load_xml(string $xml, int $options = 0, string $charSet = ''): \DOMDocument
+function domdocument_load_xml(string $xml, int $options = 0, string $charSet = null): \DOMDocument
 {
     if (!preg_match('#^\s*<\?xml#i', $xml)) {
-        if ($charSet === '') {
+        if ($charSet === null) {
             $charSet = default_charset();
         }
 
-        $xml = '<?xml encoding="' . $charSet . '" ?>' . $xml;
+        $xml = '<?xml version="1.0" encoding="' . $charSet . '" ?>' . $xml;
     }
 
     $internalErrors = null;
@@ -119,12 +119,11 @@ function domdocument_load_xml(string $xml, int $options = 0, string $charSet = '
  * @param callable $callback
  * @param int $options
  * @param string $charSet
- * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_process_html_docs(array $htmlStrings, callable $callback, int $options = 0, string $charSet = '')
+function domdocument_process_html_docs(array $htmlStrings, callable $callback, int $options = 0, string $charSet = null)
 {
-    if ($charSet === '') {
+    if ($charSet === null) {
         $charSet = default_charset();
     }
 
