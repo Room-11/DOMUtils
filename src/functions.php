@@ -117,10 +117,9 @@ function domdocument_load_xml(string $xml, int $options = 0, string $charSet = n
  * @param string $schema
  * @param int $options
  * @param int $fatalLevel
- * @return bool
  * @throws LibXMLFatalErrorException
  */
-function domdocument_validate_schema(\DOMDocument $document, string $schema, int $options = 0, int $fatalLevel = LIBXML_ERR_ERROR): bool
+function domdocument_validate_schema(\DOMDocument $document, string $schema, int $options = 0, int $fatalLevel = LIBXML_ERR_ERROR)
 {
     $internalErrors = null;
 
@@ -128,7 +127,7 @@ function domdocument_validate_schema(\DOMDocument $document, string $schema, int
         $internalErrors = libxml_use_internal_errors(true);
 
         /** @noinspection PhpMethodParametersCountMismatchInspection */
-        $result = $document->schemaValidateSource($schema, $options);
+        $document->schemaValidateSource($schema, $options);
 
         /** @var \LibXMLError $error */
         foreach (libxml_get_errors() as $error) {
@@ -136,8 +135,6 @@ function domdocument_validate_schema(\DOMDocument $document, string $schema, int
                 throw new LibXMLFatalErrorException($error);
             }
         }
-
-        return $result;
     } finally {
         if ($internalErrors !== null) {
             libxml_use_internal_errors($internalErrors);
