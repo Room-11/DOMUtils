@@ -8,7 +8,7 @@ class LibXMLFatalErrorException extends \Exception
 
     public function __construct(\LibXMLError $libXMLError)
     {
-        parent::__construct($libXMLError->message, $libXMLError->code);
+        parent::__construct(trim($libXMLError->message), $libXMLError->code);
 
         $this->libXMLError = $libXMLError;
     }
