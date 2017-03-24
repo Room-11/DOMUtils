@@ -30,10 +30,11 @@ function default_charset(string $charSet = null): string
  * @param string $html
  * @param int $options
  * @param string $charSet
+ * @param int $fatalLevel
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_load_html(string $html, int $options = 0, string $charSet = null): \DOMDocument
+function domdocument_load_html(string $html, int $options = 0, string $charSet = null, int $fatalLevel = LIBXML_ERR_FATAL): \DOMDocument
 {
     if (!preg_match('#^\s*<\?xml#i', $html)) {
         if ($charSet === null) {
@@ -53,7 +54,7 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
 
         /** @var \LibXMLError $error */
         foreach (libxml_get_errors() as $error) {
-            if ($error->level === LIBXML_ERR_FATAL) {
+            if ($error->level >= $fatalLevel) {
                 throw new LibXMLFatalErrorException($error);
             }
         }
@@ -72,10 +73,11 @@ function domdocument_load_html(string $html, int $options = 0, string $charSet =
  * @param string $xml
  * @param int $options
  * @param string $charSet
+ * @param int $fatalLevel
  * @return \DOMDocument
  * @throws LibXMLFatalErrorException
  */
-function domdocument_load_xml(string $xml, int $options = 0, string $charSet = null): \DOMDocument
+function domdocument_load_xml(string $xml, int $options = 0, string $charSet = null, int $fatalLevel = LIBXML_ERR_ERROR): \DOMDocument
 {
     if (!preg_match('#^\s*<\?xml#i', $xml)) {
         if ($charSet === null) {
@@ -95,12 +97,47 @@ function domdocument_load_xml(string $xml, int $options = 0, string $charSet = n
 
         /** @var \LibXMLError $error */
         foreach (libxml_get_errors() as $error) {
-            if ($error->level === LIBXML_ERR_FATAL) {
+            if ($error->level >= $fatalLevel) {
                 throw new LibXMLFatalErrorException($error);
             }
         }
 
         return $dom;
+    } finally {
+        if ($internalErrors !== null) {
+            libxml_use_internal_errors($internalErrors);
+        }
+    }
+}
+
+/**
+ * Validate a DOMDocument object against an XSD with error handling.
+ *
+ * @param \DOMDocument $document
+ * @param string $schema
+ * @param int $options
+ * @param int $fatalLevel
+ * @return bool
+ * @throws LibXMLFatalErrorException
+ */
+function domdocument_validate_schema(\DOMDocument $document, string $schema, int $options = 0, int $fatalLevel = LIBXML_ERR_ERROR): bool
+{
+    $internalErrors = null;
+
+    try {
+        $internalErrors = libxml_use_internal_errors(true);
+
+        /** @noinspection PhpMethodParametersCountMismatchInspection */
+        $result = $document->schemaValidateSource($schema, $options);
+
+        /** @var \LibXMLError $error */
+        foreach (libxml_get_errors() as $error) {
+            if ($error->level >= $fatalLevel) {
+                throw new LibXMLFatalErrorException($error);
+            }
+        }
+
+        return $result;
     } finally {
         if ($internalErrors !== null) {
             libxml_use_internal_errors($internalErrors);
